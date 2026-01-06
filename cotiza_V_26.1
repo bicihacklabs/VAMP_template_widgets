@@ -1,0 +1,122 @@
+<script>window.alert(&quot;🚴🏻📅📦 Se entrega en orden de solicitud. &quot;);</script>
+
+<div align="center"><div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJXUzbUXyrpjqWdaBtF-yHDfTflqrm2H5Xawu0_ezbCUjRkM50P9N3v8VTG6nt-FEFL_y0y_K1uTtcScZzXTtpq2DfUkNLlyUcsqtohDvgtMrHNdfQAjOzsHvQl0dwOmlT1_kjJcs4Zpdcpl8ktX3ASaHUpoN_1c42wNVzIhDfVzuTtKKpv-GQsWPeccXS/s512/finger-control.png" style="display: block; padding: 1em 0px; text-align: center;"><img alt="" border="0" data-original-height="512" data-original-width="512" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJXUzbUXyrpjqWdaBtF-yHDfTflqrm2H5Xawu0_ezbCUjRkM50P9N3v8VTG6nt-FEFL_y0y_K1uTtcScZzXTtpq2DfUkNLlyUcsqtohDvgtMrHNdfQAjOzsHvQl0dwOmlT1_kjJcs4Zpdcpl8ktX3ASaHUpoN_1c42wNVzIhDfVzuTtKKpv-GQsWPeccXS/s200/finger-control.png" width="200" /></a></div>
+  
+<div style="background-color: #ecf0f1; border-radius: 10px; border: 1px solid rgb(52, 152, 219); font-family: Arial, sans-serif; padding: 20px;">
+    <h3 style="color: #2c3e50; margin-top: 0px; text-align: center;">Calculadora</h3>
+    
+    <div style="margin-bottom: 15px;">
+        <label style="color: #2980b9; display: block; font-weight: bold; margin-bottom: 5px;">Costo por Hora (MXN):</label>
+        <input id="tarifaHora" style="border-radius: 5px; border: 1px solid rgb(189, 195, 199); padding: 10px; width: 95%;" type="number" value="200" />
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label style="color: #2980b9; display: block; font-weight: bold; margin-bottom: 5px;">Velocidad Promedio (Km/hr):</label>
+        <input id="velocidad" style="border-radius: 5px; border: 1px solid rgb(189, 195, 199); padding: 10px; width: 95%;" type="number" value="30" />
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label style="color: #2980b9; display: block; font-weight: bold; margin-bottom: 5px;">Duración del Servicio (Horas):</label>
+        <input id="horas" style="border-radius: 5px; border: 1px solid rgb(189, 195, 199); padding: 10px; width: 95%;" type="number" value="1.5" />
+    </div>
+
+    <h4 style="border-top: 1px solid rgb(189, 195, 199); color: #c0392b; margin-top: 20px; padding-top: 10px;">Ajustes Adicionales (+20% cada uno):</h4>
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+        <label style="color: #2c3e50; font-weight: normal;">
+            <input id="lluvia" onchange="calcularTarifas()" style="margin-right: 5px;" type="checkbox" />
+            **Bajo Lluvia** 🌧️
+        </label>
+        <label style="color: #2c3e50; font-weight: normal;">
+            <input id="nocturno" onchange="calcularTarifas()" style="margin-right: 5px;" type="checkbox" />
+            **Nocturno** 🌙
+        </label>
+        <label style="color: #2c3e50; font-weight: normal;">
+            <input id="festivo" onchange="calcularTarifas()" style="margin-right: 5px;" type="checkbox" />
+            **Día Festivo** 🎉
+        </label>
+    </div>
+
+    <button onclick="calcularTarifas()" style="background-color: #2ecc71; border-radius: 5px; border: none; color: white; cursor: pointer; font-size: 1.1em; font-weight: bold; padding: 12px 15px; width: 100%;">
+        Calcular Costo
+    </button>
+
+    <div id="resultados" style="background-color: white; border-radius: 5px; border: 2px solid rgb(41, 128, 185); margin-top: 20px; padding: 15px;">
+        <p style="color: #2c3e50; font-size: 1.1em; font-weight: bold;">Resultados:</p>
+        <p>Tarifa por Hora: <span id="tarifaFinal" style="color: #c0392b; font-weight: bold;">...</span></p>
+        <p>Costo por Kilómetro: <span id="costoKm" style="color: #27ae60; font-weight: bold;">...</span></p>
+        <p>Distancia Cubierta : <span id="distancia">...</span></p>
+        <p>Total del Servicio: <span id="costoTotal" style="color: #34495e; font-size: 1.2em; font-weight: bold;">...</span></p>
+    </div>
+</div>
+
+<script>
+    // Factor de multiplicación por cada variante (20% extra)
+    const FACTOR_VARIANTE = 0.20; 
+
+    function calcularTarifas() {
+        // 1. OBTENER VALORES DE INPUTS
+        const tarifaInput = document.getElementById('tarifaHora').value;
+        const horasInput = document.getElementById('horas').value;
+        const velocidadInput = document.getElementById('velocidad').value;
+        
+        let tarifaBase = parseFloat(tarifaInput);
+        const horas = parseFloat(horasInput);
+        const VELOCIDAD_KMH = parseFloat(velocidadInput);
+
+        // 2. VALIDACIÓN BÁSICA
+        if (isNaN(tarifaBase) || tarifaBase < 0 || 
+            isNaN(horas) || horas <= 0 || 
+            isNaN(VELOCIDAD_KMH) || VELOCIDAD_KMH <= 0) 
+        {
+            const errorMsg = 'Error. Ingrese valores numéricos válidos.';
+            document.getElementById('tarifaFinal').textContent = errorMsg;
+            document.getElementById('costoKm').textContent = errorMsg;
+            document.getElementById('distancia').textContent = errorMsg;
+            document.getElementById('costoTotal').textContent = errorMsg;
+            return;
+        }
+
+        // 3. APLICAR MODIFICADORES DE TARIFA
+        let numModificadores = 0;
+        
+        if (document.getElementById('lluvia').checked) {
+            numModificadores++;
+        }
+        if (document.getElementById('nocturno').checked) {
+            numModificadores++;
+        }
+        if (document.getElementById('festivo').checked) {
+            numModificadores++;
+        }
+        
+        // Multiplicador total: 1 + (número de modificadores * factor de cada uno)
+        const multiplicadorTotal = 1 + (numModificadores * FACTOR_VARIANTE);
+        
+        // Tarifa Final = Tarifa Base * Multiplicador
+        const TARIFA_FINAL_HORA = tarifaBase * multiplicadorTotal;
+
+        // 4. CÁLCULOS FINALES
+        
+        // Costo por KM (Tarifa Final / Velocidad)
+        const COSTO_POR_KM = TARIFA_FINAL_HORA / VELOCIDAD_KMH;
+
+        // Costo Total (Horas * Tarifa Final)
+        const costoTotal = horas * TARIFA_FINAL_HORA;
+        
+        // Distancia Recorrida (Horas * Velocidad)
+        const distancia = horas * VELOCIDAD_KMH;
+
+        // 5. MOSTRAR RESULTADOS
+        document.getElementById('tarifaFinal').textContent = `$${TARIFA_FINAL_HORA.toFixed(2)} MXN`;
+        document.getElementById('costoKm').textContent = `$${COSTO_POR_KM.toFixed(2)} MXN`;
+        document.getElementById('distancia').textContent = `${distancia.toFixed(1)} Km`;
+        document.getElementById('costoTotal').textContent = `$${costoTotal.toFixed(2)} MXN`;
+    }
+
+    // Inicializar el cálculo al cargar la página
+    window.onload = calcularTarifas; 
+</script>  
+
+<div align="center"><button onclick="window.print()" style="background-color: #ca0000; border-radius: 5px; border: none; color: white; cursor: pointer; font-size: 16px; padding: 10px 20px;" type="button">
+                🌱 Imprimir 🖨️
+            </button></div></div>
